@@ -44,7 +44,7 @@ jobs:
             --sources nst malay_mail \
             --output-dir data \
             --no-timestamp \
-            --filename-prefix latest_news \
+            --filename-prefix news \
             --json \
             --csv \
             --max-fetch 30 \
