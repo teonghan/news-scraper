@@ -1,0 +1,39 @@
+name: news-scraper
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  # Python runtime
+  - python=3.11
+
+  # HTTP & HTML parsing
+  - requests=2.31.*
+  - beautifulsoup4=4.12.*
+  - lxml                        # faster HTML/XML parser backend for bs4
+
+  # NLP (summariser)
+  - nltk=3.8.*
+
+  - pip
+
+# ── Quick-start ──────────────────────────────────────────────
+# 1. Create the environment:
+#      conda env create -f environment.yaml
+#
+# 2. Activate it:
+#      conda activate news-scraper
+#
+# 3. (First run only) pre-download NLTK data:
+#      python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
+#
+# 4. Run the scraper:
+#      python scraper.py
+#      python scraper.py --sources nst --csv --output-dir ./data
+#
+# 5. To update the environment after changes to this file:
+#      conda env update -f environment.yaml --prune
+#
+# 6. To remove the environment:
+#      conda env remove -n news-scraper

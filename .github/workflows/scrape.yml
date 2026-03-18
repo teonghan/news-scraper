@@ -1,0 +1,63 @@
+name: News Scraper
+
+on:
+  schedule:
+    # Runs every 6 hours — edit to taste (UTC time)
+    # Tip: https://crontab.guru to build cron expressions
+    - cron: "0 */6 * * *"
+
+  # Allow manual trigger from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to git-push the output back
+
+    steps:
+      # ── 1. Checkout ───────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Set up Python ──────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # ── 3. Install dependencies ───────────────────────────────
+      # Using pip directly (faster than full conda on CI)
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 lxml nltk
+
+      # ── 4. Pre-download NLTK data ─────────────────────────────
+      - name: Download NLTK resources
+        run: |
+          python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab'); nltk.download('stopwords')"
+
+      # ── 5. Run scraper ────────────────────────────────────────
+      - name: Run scraper
+        run: |
+          python scraper.py \
+            --sources nst malay_mail \
+            --output-dir data \
+            --no-timestamp \
+            --filename-prefix latest_news \
+            --json \
+            --csv \
+            --max-fetch 30 \
+            --max-items 60 \
+            --quiet
+
+      # ── 6. Commit & push output ───────────────────────────────
+      - name: Commit output
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          # Only commit if there are actual changes
+          git diff --cached --quiet || git commit -m "chore: scrape $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          git push
