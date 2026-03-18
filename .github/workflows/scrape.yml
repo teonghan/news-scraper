@@ -4,8 +4,10 @@ on:
   schedule:
     # Runs every 6 hours — edit to taste (UTC time)
     # Tip: https://crontab.guru to build cron expressions
-    - cron: "0 */6 * * *"
-
+    - cron: "30 23 * * *"
+    - cron: "30 4 * * *"
+    - cron: "30 8 * * *"
+    
   # Allow manual trigger from the Actions tab
   workflow_dispatch:
 
