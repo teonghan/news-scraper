@@ -23,7 +23,7 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 from io import StringIO
 from pathlib import Path
@@ -129,7 +129,8 @@ def safe_iso(pubdate: str | None) -> str | None:
         dt = parsedate_to_datetime(pubdate)
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
-        return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        MYT = timezone(timedelta(hours=8))
+        return dt.astimezone(MYT).strftime("%Y-%m-%dT%H:%M:%S+08:00")
     except Exception:
         return None
 
@@ -316,7 +317,8 @@ def scrape_feed(key: str, meta: dict, args: argparse.Namespace,
 
 def build_json(articles: list[dict], args: argparse.Namespace,
                logger: logging.Logger) -> dict:
-    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    MYT = timezone(timedelta(hours=8))
+    now_iso = datetime.now(MYT).strftime("%Y-%m-%dT%H:%M:%S+08:00")
     items: list[dict] = []
     seen: set[str] = set()
 
